@@ -1,23 +1,24 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reward Ad Test</title>
-<style>body{margin:0;background:#10131c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh}.card{width:min(520px,90vw);background:#1b2130;border:1px solid #3b465f;border-radius:20px;padding:28px;text-align:center;box-shadow:0 20px 60px #0008}h1{margin-top:0}.stat{font-size:24px;margin:22px}.btn{border:0;border-radius:12px;padding:14px 20px;margin:7px;font-size:16px;font-weight:700;cursor:pointer;background:#6c63ff;color:#fff}.btn:disabled{opacity:.5}.hint{color:#aeb7ca;line-height:1.5}.log{margin-top:18px;min-height:24px;color:#72f0a8}</style></head>
-<body><main class="card"><h1>🎁 Reward Ad Test</h1><p class="hint">Нажми кнопку рекламы. Награда начислится только после события <b>rewardEarned</b>.</p><div class="stat">Монеты: <b id="coins">0</b></div><button class="btn" id="ad">📺 Посмотреть рекламу</button><button class="btn" id="reset">Сбросить</button><div class="log" id="log">Проверяем рекламу…</div></main>
+<style>body{margin:0;background:#10131c;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh}.card{width:min(520px,90vw);background:#1b2130;border:1px solid #3b465f;border-radius:20px;padding:28px;text-align:center;box-shadow:0 20px 60px #0008}h1{margin-top:0}.stat{font-size:24px;margin:22px}.btn{border:0;border-radius:12px;padding:14px 20px;margin:7px;font-size:16px;font-weight:700;cursor:pointer;background:#6c63ff;color:#fff}.hint{color:#aeb7ca;line-height:1.5}.log{margin-top:18px;min-height:48px;color:#72f0a8;white-space:pre-line}</style></head>
+<body><main class="card"><h1>🎁 Reward Ad Test</h1><p class="hint">Награда начисляется только после успешного reward-события.</p><div class="stat">Монеты: <b id="coins">0</b></div><button class="btn" id="ad">📺 Посмотреть рекламу</button><button class="btn" id="reset">Сбросить</button><div class="log" id="log">Проверяем AndroidAPI…</div></main>
 <script>
 const coinsEl=document.getElementById('coins'),log=document.getElementById('log'),ad=document.getElementById('ad');
-let coins=Number(localStorage.getItem('ad_test_coins')||0); coinsEl.textContent=coins;
-function ready(){return window.AndroidAPI&&typeof AndroidAPI.showRewardedAd==='function'}
-if(ready()&&typeof AndroidAPI.isRewardedAdLoaded==='function'){
-  log.textContent=AndroidAPI.isRewardedAdLoaded()?'Реклама готова к показу':'Реклама пока не загружена';
-}else log.textContent='Открой игру в Android-оболочке с AndroidAPI';
+let coins=Number(localStorage.getItem('ad_test_coins')||0); coinsEl.textContent=coins; let rewarded=false;
+function hasApi(){return window.AndroidAPI&&typeof AndroidAPI.showRewardedAd==='function'}
+function reward(detail){if(rewarded)return; rewarded=true; const amount=Number(detail?.amount)||1; coins+=amount; localStorage.setItem('ad_test_coins',coins); coinsEl.textContent=coins; log.textContent='✅ Награда получена: '+amount+' '+(detail?.type||'reward');}
+window.onRewardEarned=function(amount,type){reward({amount,type});};
+if(hasApi()){
+  if(typeof AndroidAPI.isRewardedAdLoaded==='function') log.textContent=AndroidAPI.isRewardedAdLoaded()?'🟢 Rewarded-реклама загружена':'🟡 Rewarded-реклама пока не загружена';
+  else log.textContent='🟢 AndroidAPI найден, проверка загрузки недоступна';
+}else log.textContent='🔴 AndroidAPI не найден';
 ad.onclick=()=>{
-  if(!ready()){log.textContent='AndroidAPI недоступен в обычном браузере';return}
-  log.textContent='Реклама запущена… ждём rewardEarned';
-  AndroidAPI.showRewardedAd();
+  rewarded=false;
+  if(!hasApi()){log.textContent='🔴 AndroidAPI недоступен';return}
+  if(typeof AndroidAPI.isRewardedAdLoaded==='function'&&!AndroidAPI.isRewardedAdLoaded()){log.textContent='🟡 Реклама ещё не загружена. Подожди немного и нажми снова.';return}
+  log.textContent='📺 Реклама запущена… ждём rewardEarned';
+  try{AndroidAPI.showRewardedAd('onRewardEarned')}catch(e){log.textContent='❌ Ошибка API: '+e.message}
 };
-window.addEventListener('rewardEarned',event=>{
-  const amount=Number(event.detail?.amount)||1;
-  coins+=amount;localStorage.setItem('ad_test_coins',coins);coinsEl.textContent=coins;
-  log.textContent='✅ Награда получена: '+amount+' '+(event.detail?.type||'reward');
-});
-document.getElementById('reset').onclick=()=>{coins=0;localStorage.setItem('ad_test_coins','0');coinsEl.textContent=coins;log.textContent='Счёт сброшен'};
+window.addEventListener('rewardEarned',event=>reward(event.detail||{}));
+document.getElementById('reset').onclick=()=>{coins=0;rewarded=false;localStorage.setItem('ad_test_coins','0');coinsEl.textContent=coins;log.textContent='Счёт сброшен'};
 </script></body></html>

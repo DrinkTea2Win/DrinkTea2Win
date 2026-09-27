@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Shadow Rift — 2D Dungeon</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div class="topbar">
+      <div class="brand">SHADOW RIFT</div>
+      <div class="stats"><span id="level">УР. 1</span><span id="hp">HP 100/100</span><span id="gold">◆ 0</span></div>
+      <button id="pauseBtn">Ⅱ</button>
+    </div>
+    <div class="progress"><div id="xpbar"></div></div>
+    <div class="location" id="location">Ржавый коридор · Этаж 1</div>
+    <div id="quest"></div>
+  </div>
+
+  <div id="menu" class="screen">
+    <div class="panel hero">
+      <div class="eyebrow">ORIGINAL 2D ACTION RPG</div>
+      <h1>SHADOW<br><b>RIFT</b></h1>
+      <p>Исследуй подземелья, усиливай героя, собирай снаряжение и возвращайся сильнее.</p>
+      <button id="startBtn" class="primary">НАЧАТЬ ЗАБЕГ</button>
+      <button id="continueBtn">ПРОДОЛЖИТЬ</button>
+      <button id="afkBtn">AFK-ЛАГЕРЬ</button>
+    </div>
+  </div>
+
+  <div id="loadout" class="screen hidden">
+    <div class="panel">
+      <div class="eyebrow">ПЕРЕД ВЫХОДОМ</div>
+      <h2>Снаряжение</h2>
+      <div class="cards" id="loadoutCards"></div>
+      <button id="enterDungeon" class="primary">ВОЙТИ В ПОДЗЕМЕЛЬЕ</button>
+    </div>
+  </div>
+
+  <div id="result" class="screen hidden">
+    <div class="panel">
+      <div class="eyebrow" id="resultEyebrow">ЗАБЕГ ЗАВЕРШЁН</div>
+      <h2 id="resultTitle">Победа</h2>
+      <div id="resultText"></div>
+      <button id="againBtn" class="primary">СЛЕДУЮЩИЙ ЗАБЕГ</button>
+      <button id="resultMenuBtn">В МЕНЮ</button>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="panel">
+      <h2>Пауза</h2>
+      <button id="resumeBtn" class="primary">ПРОДОЛЖИТЬ</button>
+      <button id="saveBtn">СОХРАНИТЬ</button>
+      <button id="pauseMenuBtn">В МЕНЮ</button>
+    </div>
+  </div>
+
+  <div id="perk" class="screen hidden">
+    <div class="panel">
+      <div class="eyebrow">УРОВЕНЬ ПОВЫШЕН</div>
+      <h2>Выбери усиление</h2>
+      <div class="cards" id="perkCards"></div>
+    </div>
+  </div>
+
+  <div id="adPanel" class="ad hidden">
+    <div><b>⚡ АВТО-БОЙ</b><small>После добровольного rewarded-рекламного просмотра: 10 минут.</small></div>
+    <button id="adBtn">ПОЛУЧИТЬ</button>
+  </div>
+
+  <div id="touchHint">Тяни пальцем по экрану для движения</div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
